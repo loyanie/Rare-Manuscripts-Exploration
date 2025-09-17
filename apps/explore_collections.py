@@ -1,16 +1,23 @@
+"""This file creates a web app that lets users browse and view historical documents about 
+Duke University and North Carolina events through dropdown menus and clickable tables."""
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
 from pathlib import Path
+
+# Get the parent directory to access data files
 home_dir = Path(__file__).parents[1]
 def app():
-    @st.cache
-    # Load data
+    @st.cache # Cache data to avoid reloading on every interaction
+
     def load_data():
-        # load main data
+       """Load the main CSV file and collection dictionary from pickle file"""
+        
+        # Load main document data from CSV
         df = pd.read_csv(home_dir/"data/main_data.csv")
-        # load collection info data
+        # load collection info data. The pre-organized document indices for each collection category
         with open('data/collection_dict.pkl', 'rb') as f:
             collection = pickle.load(f)
         return df, collection
@@ -18,8 +25,11 @@ def app():
 
 
     def get_df_key_index(key, dic):
+        """Filter dataframe based on selected key from collection dictionary"""
         if key == "All":
+            # Combine all indices from the dictionary and return all matching rows
             return df.iloc[sum(dic.values(), [])]
+        # Get specific indices for the selected key
         ind = dic[key]
         return df.iloc[ind, :]
 
